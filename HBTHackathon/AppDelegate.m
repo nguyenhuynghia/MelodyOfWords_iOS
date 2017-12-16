@@ -7,18 +7,45 @@
 //
 
 #import "AppDelegate.h"
+#import "TGChatViewController.h"
+#import "NOCMessageManager.h"
+#import "CustomNavigationController.h"
+#import "NOCChat.h"
+#import "Service.h"
+#import "FileEntity.h"
+#import "MIDIManager.h"
 
-@interface AppDelegate ()
-
+@interface AppDelegate () 
 @end
 
 @implementation AppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    [[NOCMessageManager manager] play];
     // Override point for customization after application launch.
+    NOCChat *chat = [self botChat];
+    TGChatViewController *chatVC = [[TGChatViewController alloc] initWithChat:chat];
+    CustomNavigationController *rootNavi = [[CustomNavigationController alloc] initWithRootViewController:chatVC];
+    self.window.rootViewController = rootNavi;
     return YES;
 }
+
+- (NOCChat *)botChat
+    {
+        static NOCChat *_botChat = nil;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            _botChat = [[NOCChat alloc] init];
+            _botChat.type = @"bot";
+            _botChat.targetId = @"89757";
+            _botChat.chatId = [NSString stringWithFormat:@"%@_%@", _botChat.type, _botChat.targetId];
+            _botChat.title = @"Gothons From Planet Percal #25";
+            _botChat.detail = @"bot";
+        });
+        return _botChat;
+    }
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {
